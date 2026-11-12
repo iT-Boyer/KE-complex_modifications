@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/pqrs-org/KE-complex_modifications/workflows/KE-complex_modifications%20CI/badge.svg)](https://github.com/pqrs-org/KE-complex_modifications/actions)
+[![Build Status](https://github.com/pqrs-org/KE-complex_modifications/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/pqrs-org/KE-complex_modifications/actions/workflows/ci.yml?query=branch%3Amain+event%3Apush)
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://github.com/pqrs-org/KE-complex_modifications/blob/main/LICENSE.md)
 
 # KE-complex_modifications
@@ -9,9 +9,155 @@ complex_modifications for Karabiner-Elements.
 
 ## complex_modifications documents
 
--   [karabiner.json Reference Manual](https://karabiner-elements.pqrs.org/docs/json/)
-    -   [Typical complex_modifications examples](https://karabiner-elements.pqrs.org/docs/json/typical-complex-modifications-examples/)
-    -   [complex_modifications manipulator definition](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/)
+- [karabiner.json Reference Manual](https://karabiner-elements.pqrs.org/docs/json/)
+    - [Typical complex_modifications examples](https://karabiner-elements.pqrs.org/docs/json/typical-complex-modifications-examples/)
+    - [complex_modifications manipulator definition](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/)
+
+## Rule file formats in this repository
+
+Rule files can use any of the following formats:
+
+- A JSON ruleset containing `title` and `rules` under `public/json`.
+- A JSON file containing one rule (`description` and `manipulators`) under
+  `public/json`.
+- A JavaScript file under `public/js` whose final expression returns one rule
+  (`description` and `manipulators`).
+
+Karabiner-Elements 16.2.0 and later can import single-rule JSON and JavaScript
+directly. To support Karabiner-Elements 16.1.0 and earlier, the build also
+converts these sources to the `title` and `rules` ruleset format. The rule's
+`description` is used as the ruleset title.
+
+A single JSON rule is replaced by its ruleset form at the same distribution
+path, so there is only one distributed JSON file. JavaScript source remains
+available unchanged, and its generated ruleset JSON is written beside it with
+the `.ruleset.json` suffix.
+
+- `public/json/example.json` → `dist/json/example.json`
+- `public/js/example.js` → `dist/js/example.js`
+- generated JavaScript ruleset JSON → `dist/js/example.ruleset.json`
+
+The generated `dist.json` index contains lightweight `metadata` for display and
+search. Full `manipulators` remain in the distributed JSON files and are not
+duplicated in this index.
+
+### JSON ruleset
+
+JSON rulesets bundle multiple rules into a single file so users can pick and enable what they need.
+For example, the "Emacs key bindings" ruleset includes several rules for different use cases.
+
+| The distributed JSON file                                      | Complex Modifications                                          |
+| -------------------------------------------------------------- | -------------------------------------------------------------- |
+| ![distributed-json-file](./files/distributed-json-file@2x.png) | ![complex-modifications](./files/complex-modifications@2x.png) |
+
+To bundle them this way, the JSON has the following structure.
+Each element under rules is a single rule as defined in Complex Modifications.
+
+If you list GitHub usernames in the "maintainers" field, the distribution site will automatically link to those accounts:
+<https://ke-complex-modifications.pqrs.org/>
+
+```json
+{
+    "title": "Emacs key bindings (rev XXX)",
+    "maintainers": ["tekezo"],
+    "rules": [
+        {
+            "description": "Emacs key bindings [control+keys] (rev XXX)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {},
+                    "to": []
+                }
+            ]
+        },
+        {
+            "description": "Emacs key bindings [option+keys] (rev XXX)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {},
+                    "to": []
+                }
+            ]
+        }
+    ]
+}
+```
+
+### Single JSON rule
+
+The object normally placed inside `rules` can also be saved directly:
+
+```json
+{
+    "description": "Change caps_lock to escape",
+    "manipulators": [
+        {
+            "type": "basic",
+            "from": { "key_code": "caps_lock" },
+            "to": [{ "key_code": "escape" }]
+        }
+    ]
+}
+```
+
+Optional ruleset attribution fields such as `maintainers` and `author` can be
+included in the same object. They are moved to the ruleset level during the build.
+
+The distributed `json/example.json` contains the converted ruleset form. The
+distribution site imports this file directly and does not provide a separate
+compatible JSON action for single JSON rules.
+
+### JavaScript rule
+
+JavaScript is useful when a rule contains repeated definitions. Helper functions can
+be defined in the same file. The last expression must return a single rule
+(`description` and `manipulators`). JSON ruleset objects containing `title` and
+`rules` are not supported under `public/js`. For example:
+
+<!-- prettier-ignore -->
+```js
+// JavaScript must be written in ECMAScript 5.1.
+
+function main() {
+  return {
+    description: 'Change h/j/k/l to arrow keys',
+    manipulators: [
+      makeManipulator('h', 'left_arrow'),
+      makeManipulator('j', 'down_arrow'),
+      makeManipulator('k', 'up_arrow'),
+      makeManipulator('l', 'right_arrow'),
+    ],
+  }
+}
+
+function makeManipulator(from, to) {
+  return {
+    type: 'basic',
+    from: { key_code: from },
+    to: [{ key_code: to }],
+  }
+}
+
+main()
+```
+
+A source named `public/js/example.js` is distributed as `dist/js/example.js`.
+Its evaluated and normalized JSON ruleset is distributed as
+`dist/js/example.ruleset.json`.
+Use `js/example.js` as its path in `public/groups.json`.
+The build uses the value of the last JavaScript expression; standard output from
+the script is ignored.
+
+For JavaScript rules, the distribution site's import menu provides both of the
+following actions:
+
+- `Import JavaScript code`
+- `Import JSON compatible with Karabiner-Elements 16.1.0 or earlier`
+
+The menu can also display the generated JSON with `Show compatible JSON` and
+copy its URL with `Copy compatible JSON URL`.
 
 ## How to add your rules
 
@@ -32,8 +178,15 @@ Follow the steps below to create a PR and add your settings!
     git switch -c my-settings
     ```
 
-4.  Put a JSON generator file (`.js`) into [src/json](https://github.com/pqrs-org/KE-complex_modifications/tree/main/src/json).
-    (Or put a `.json` file directly into [public/json](https://github.com/pqrs-org/KE-complex_modifications/tree/main/public/json) directory.)
+4.  Put a JSON file into [public/json](https://github.com/pqrs-org/KE-complex_modifications/tree/main/public/json)
+    or a JavaScript file into [public/js](public/js). A JSON file can contain
+    either a full ruleset or a single rule. A JavaScript file must return a
+    single rule.
+
+    Existing generator files in [src/json](https://github.com/pqrs-org/KE-complex_modifications/tree/main/src/json)
+    are also supported. Their names must end in `.json.js`; generated JSON is
+    written to `public/json` as before.
+
 5.  <details>
     <summary>
         (Optional) Update public/groups.json if you want to add your rules to a particular category.
@@ -48,13 +201,18 @@ Follow the steps below to create a PR and add your settings!
     },
     ```
 
+    You can use the tag `<kbd>⇧Shift</kbd>` to make a nice <kbd>⇧Shift</kbd> in your html.
     </details>
 
 6.  Run `make` command in Terminal to validate your files.<br/>
-    If you placed a generator file into `src/json`, json file will be generated in the `public/json` by this command.
+    JavaScript files are evaluated for validation. JSON is written under
+    `dist/json`, and JavaScript is copied to `dist/js`. Each JavaScript rule also
+    produces a sibling `*.ruleset.json` file. Single JSON rules are converted to
+    ruleset form at their original path under `dist/json`. Files in `src/json`
+    also update their corresponding generated files under `public/json`.
 
     ```shell
-    make
+    make all
     ```
 
     If there is a problem, an error message is displayed. Fix your files until no errors are shown.
@@ -67,10 +225,15 @@ Follow the steps below to create a PR and add your settings!
 
 7.  Test your files
 
-    Copy a json file to `~/.config/karabiner/assets/complex_modifications`.
+    Copy the file to test to
+    `~/.config/karabiner/assets/complex_modifications`. For a JSON source, copy
+    the built JSON ruleset. For a JavaScript source, copy the JavaScript file
+    itself without converting it to JSON.
 
     ```shell
-    cp public/json/your_awesome_configuration.json ~/.config/karabiner/assets/complex_modifications
+    cp dist/json/your_awesome_configuration.json ~/.config/karabiner/assets/complex_modifications
+    # For a JavaScript source:
+    cp dist/js/your_awesome_configuration.js ~/.config/karabiner/assets/complex_modifications
     ```
 
     Import rules from `Karabiner-Elements Settings > Complex Modifications > Rules > Add rule`.
@@ -83,7 +246,7 @@ Follow the steps below to create a PR and add your settings!
     Run local web server by the following command in Terminal.
 
     ```shell
-    make server
+    make preview-server
     ```
 
     Then open <http://localhost:8000>.
@@ -97,6 +260,44 @@ Follow the steps below to create a PR and add your settings!
     ```
 
 10. Create a PR on GitHub.
+
+## How to add additional description for your rules
+
+Use the `description` field to explain how each distributed JSON rule works.
+If a one-line description is not enough (e.g., for complex rules), you can add supplementary text on the site:
+
+1.  Place an HTML file under `public/extra_descriptions/`.
+2.  Reference that HTML file from `public/groups.json`.
+
+The additional description will then appear on the site as shown in the screenshot.
+
+| JSON only                               | With extra description                                |
+| --------------------------------------- | ----------------------------------------------------- |
+| ![json-only](./files/site-rules@2x.png) | ![extra description](./files/site-description@2x.png) |
+
+- Example of extra description:
+    - <https://ke-complex-modifications.pqrs.org/?rule=json%2Femacs_key_bindings.json>
+- Example of HTML file:
+    - <https://github.com/pqrs-org/KE-complex_modifications/blob/main/public/extra_descriptions/emacs_key_bindings.json.html>
+- Example entry in groups.json:
+
+```json
+{
+    "path": "json/emacs_key_bindings.json",
+    "extra_description_path": "extra_descriptions/emacs_key_bindings.json.html"
+}
+```
+
+### Tips for writing extra description HTML file
+
+- Bootstrap's CSS are applied automatically, so you can adjust spacing with utility classes like mt-4, etc.
+- Do not include `<html>` and `<body>` tags. Write only the HTML for the description section.
+- You can include images with tags like `<img src="multitouch-extension/enable-multitouch-extension.png" class="img-fluid border" />`.
+  Be sure to add the images to the repository.
+- As described above, you can preview your HTML by `make preview-server` command and open `http://localhost:8000/` in your browser.
+  The HTML file will not be loaded unless you specify `extra_description_path` in `public/groups.json`, so be sure to update `groups.json`.
+- After modifying an HTML file, reload the page in your browser to reflect the changes on the preview server.
+  Automatic hot reload is not supported.
 
 ## Sync your fork
 
@@ -130,28 +331,33 @@ git clean -x -d -f .
 git push
 ```
 
-## Notes on creating your generators
+## Notes on JavaScript rule files and generators
 
-The code in `src/json/*.js` is executed by [Duktape](https://duktape.org/), which is built into the Karabiner-Elements's command line interface ( `karabiner_cli`).
+On macOS, the code in `public/js/*.js` and `src/json/*.js` is executed by
+[Duktape](https://duktape.org/), which is built into the Karabiner-Elements
+command line interface (`karabiner_cli`). The Linux deployment build evaluates
+`public/js/*.js` with Node.js because `karabiner_cli` is not available there.
+JavaScript must remain compatible with the Duktape environment so both builds
+produce the same result.
 
 Unlike the latest Node.js, the basic language specification is ES5.1, so the following features cannot be used.
 
--   `let` (`const` is specially supported)
--   Arrow functions
--   Default parameters
--   Spread (...) syntax
--   Template literals
+- `let` (`const` is specially supported)
+- Arrow functions
+- Default parameters
+- Spread (...) syntax
+- Template literals
 
 ### Examples
 
 There are many existing codes. Here are some of the more distinctive ones among them.
 
--   Use the predefined list of bundle identifiers in `frontmost_application_if`.
-    -   [capslock_shift_copy_paste.json.js](https://github.com/pqrs-org/KE-complex_modifications/blob/main/src/json/capslock_shift_copy_paste.json.js)
--   Generate remappings from a list of characters
-    -   [colemak_layout.json.js](https://github.com/pqrs-org/KE-complex_modifications/blob/main/src/json/colemak_layout.json.js)
--   Include file from another file
-    -   [personal_thooams.json.js](https://github.com/pqrs-org/KE-complex_modifications/blob/main/src/json/personal_thooams.json.js)
-    -   [control_backspace_to_function_backspace.json.js](https://github.com/pqrs-org/KE-complex_modifications/blob/main/src/json/control_backspace_to_function_backspace.json.js)
--   Generate rules from key combinations
-    -   [matias_ergo_pro.json.js](https://github.com/pqrs-org/KE-complex_modifications/blob/main/src/json/matias_ergo_pro.json.js)
+- Use the predefined list of bundle identifiers in `frontmost_application_if`.
+    - [capslock_shift_copy_paste.json.js](https://github.com/pqrs-org/KE-complex_modifications/blob/main/src/json/capslock_shift_copy_paste.json.js)
+- Generate remappings from a list of characters
+    - [colemak_layout.json.js](https://github.com/pqrs-org/KE-complex_modifications/blob/main/src/json/colemak_layout.json.js)
+- Include file from another file
+    - [personal_thooams.json.js](https://github.com/pqrs-org/KE-complex_modifications/blob/main/src/json/personal_thooams.json.js)
+    - [control_backspace_to_function_backspace.json.js](https://github.com/pqrs-org/KE-complex_modifications/blob/main/src/json/control_backspace_to_function_backspace.json.js)
+- Generate rules from key combinations
+    - [matias_ergo_pro.json.js](https://github.com/pqrs-org/KE-complex_modifications/blob/main/src/json/matias_ergo_pro.json.js)

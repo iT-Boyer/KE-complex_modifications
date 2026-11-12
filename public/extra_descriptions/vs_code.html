@@ -1,0 +1,97 @@
+<p style="margin-top: 20px; font-weight: bold">
+  Hyper Key
+</p>
+
+<p>
+  Includes the Caps Lock hyper key as the foundation for all VS Code shortcuts in this pack. Caps Lock is
+  remapped to a unique modifier combination (⌃⇧⌘) that doesn't conflict with any built-in VS Code or macOS
+  shortcut, giving you a dedicated left-hand anchor key that's fast to reach without lifting your hand off
+  the home row.
+</p>
+
+<p>
+  All shortcuts in this pack are built on top of the hyper key, so activating them is a single fluid
+  motion - hold Caps Lock and tap a letter - rather than awkward multi-finger contortions across the keyboard.
+</p>
+
+<table class="table">
+  <tr>
+    <td style="width: 300px;">Caps Lock</td>
+    <td>
+      Maps to left control + left shift + right command (⌃⇧⌘). Used as the hyper key for all VS Code
+      shortcuts in this pack. The Caps Lock function is not lost - use double-tap right shift instead.
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 300px;">Double-tap right shift</td>
+    <td>Toggle caps lock on/off</td>
+  </tr>
+</table>
+
+<p style="margin-top: 20px; font-weight: bold">
+  Searching and Navigation
+</p>
+
+<p>
+  Quick access to VS Code's most-used search and navigation commands, all reachable from the home row via
+  the hyper key.
+</p>
+
+<table class="table">
+  <tr>
+    <td style="width: 300px;">Caps Lock Hyper Key + a</td>
+    <td>Quick open - fuzzy search and open any file in the workspace</td>
+  </tr>
+  <tr>
+    <td style="width: 300px;">Caps Lock Hyper Key + s</td>
+    <td>Go to symbol - search all symbols (functions, classes, variables) in the current file</td>
+  </tr>
+  <tr>
+    <td style="width: 300px;">Caps Lock Hyper Key + d</td>
+    <td>Command palette - access any VS Code command by name</td>
+  </tr>
+</table>
+
+<p style="margin-top: 20px; font-weight: bold">
+  Toggle Panels and Zen Mode
+</p>
+
+<p>
+  Instantly show or hide VS Code panels to reclaim screen space when you need to focus, or bring them back
+  when you need context. Zen mode removes all chrome (sidebar, panels, tabs) for distraction-free coding.
+</p>
+
+<table class="table">
+  <tr>
+    <td style="width: 300px;">Caps Lock Hyper Key + q</td>
+    <td>Toggle zen mode</td>
+  </tr>
+  <tr>
+    <td style="width: 300px;">Caps Lock Hyper Key + w</td>
+    <td>Toggle sidebar</td>
+  </tr>
+  <tr>
+    <td style="width: 300px;">Caps Lock Hyper Key + e</td>
+    <td>Toggle terminal</td>
+  </tr>
+  <tr>
+    <td style="width: 300px;">Right cmd</td>
+    <td>Toggle zen mode</td>
+  </tr>
+</table>
+
+<p style="margin-top: 20px; font-weight: bold">
+  Required: keybindings.json in Visual Studio Code
+</p>
+
+<p>
+  Add the following entry to your keybindings.json in Visual Studio Code. This ensures the editor pane is
+  focused when activating the zen mode shortcuts, so they work correctly regardless of which panel is active.
+</p>
+
+<pre><code>
+  {
+    &quot;key&quot;: &quot;ctrl+shift+alt+f&quot;,
+    &quot;command&quot;: &quot;workbench.action.focusActiveEditorGroup&quot;
+  }
+</code></pre>

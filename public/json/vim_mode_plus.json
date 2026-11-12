@@ -1,8 +1,5 @@
 {
   "title": "Vim Mode Plus",
-  "maintainers": [
-    "harmtemolder"
-  ],
   "homepage": "https://git.sr.ht/~harmtemolder/karabiner-vim-mode-plus",
   "import_url": "karabiner://karabiner/assets/complex_modifications/import?url=https://git.sr.ht/~harmtemolder/karabiner-vim-mode-plus/blob/master/vim_mode_plus.json",
   "rules": [
@@ -231,7 +228,7 @@
     },
     {
       "description": "(Vim 2/11) finger on trackpad + any key -> off",
-      "available_since": "12.6.9",
+      "description_notes": ["- Available since Karabiner-Elements 12.6.9."],
       "manipulators": [
         {
           "type": "basic",

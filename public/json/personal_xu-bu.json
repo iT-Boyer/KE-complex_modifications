@@ -1,0 +1,190 @@
+{
+    "title": "Personal rules (@xu-bu)",
+    "maintainers": [
+        "xu-bu"
+    ],
+    "rules": [
+        {
+            "description": "Command-Alt-T opens a new Terminal window",
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "t",
+                        "modifiers": {
+                            "mandatory": [
+                                "control",
+                                "left_option"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "shell_command": "/usr/bin/open -na Terminal"
+                        }
+                    ],
+                    "type": "basic"
+                }
+            ]
+        },
+        {
+            "description": "Tap left Shift to switch input language",
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "left_shift",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "left_shift"
+                        }
+                    ],
+                    "to_if_alone": [
+                        {
+                            "hold_down_milliseconds": 100,
+                            "key_code": "spacebar",
+                            "modifiers": [
+                                "left_control"
+                            ]
+                        }
+                    ],
+                    "type": "basic"
+                }
+            ]
+        },
+        {
+            "description": "Ctrl+click becomes Cmd+click in VS Code",
+            "manipulators": [
+                {
+                    "conditions": [
+                        {
+                            "bundle_identifiers": [
+                                "^com\\.microsoft\\.VSCode$"
+                            ],
+                            "type": "frontmost_application_if"
+                        }
+                    ],
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "pointing_button": "button1"
+                    },
+                    "to": [
+                        {
+                            "modifiers": [
+                                "left_command"
+                            ],
+                            "pointing_button": "button1"
+                        }
+                    ],
+                    "type": "basic"
+                }
+            ]
+        },
+        {
+            "description": "Mouse side buttons navigate back/forward in VS Code",
+            "manipulators": [
+                {
+                    "conditions": [
+                        {
+                            "bundle_identifiers": [
+                                "^com\\.microsoft\\.VSCode$"
+                            ],
+                            "type": "frontmost_application_if"
+                        }
+                    ],
+                    "from": {
+                        "modifiers": {
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "pointing_button": "button4"
+                    },
+                    "to": [
+                        {
+                            "key_code": "hyphen",
+                            "modifiers": [
+                                "left_control"
+                            ]
+                        }
+                    ],
+                    "type": "basic"
+                },
+                {
+                    "conditions": [
+                        {
+                            "bundle_identifiers": [
+                                "^com\\.microsoft\\.VSCode$"
+                            ],
+                            "type": "frontmost_application_if"
+                        }
+                    ],
+                    "from": {
+                        "modifiers": {
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "pointing_button": "button5"
+                    },
+                    "to": [
+                        {
+                            "key_code": "hyphen",
+                            "modifiers": [
+                                "left_control",
+                                "left_shift"
+                            ]
+                        }
+                    ],
+                    "type": "basic"
+                }
+            ]
+        },
+        {
+            "description": "Ctrl+click becomes Cmd+click in Finder (multi-select)",
+            "manipulators": [
+                {
+                    "conditions": [
+                        {
+                            "bundle_identifiers": [
+                                "^com\\.apple\\.finder$"
+                            ],
+                            "type": "frontmost_application_if"
+                        }
+                    ],
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "pointing_button": "button1"
+                    },
+                    "to": [
+                        {
+                            "modifiers": [
+                                "left_command"
+                            ],
+                            "pointing_button": "button1"
+                        }
+                    ],
+                    "type": "basic"
+                }
+            ]
+        }
+    ]
+}

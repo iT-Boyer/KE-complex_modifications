@@ -7,6 +7,7 @@ function main() {
     JSON.stringify(
       {
         title: 'Neo2',
+        maintainers: ['jgosmann'],
         rules: rules()
       },
       null,
@@ -57,6 +58,10 @@ function rules() {
       // deletion
       { from: 'w', to: 'delete_or_backspace' },
       { from: 'r', to: 'delete_forward' },
+
+      // PC keys
+      { from: 'b', to: 'undo' },
+      { from: 'c', to: 'insert' },
 
       // Neo num pad in layer 4
       { from: 'm', to: 'keypad_1' },
@@ -136,9 +141,9 @@ function rules() {
         conditions: condition === undefined ? [isLayoutActive, ifMod4On] : [isLayoutActive, ifMod4On, condition]
       }),
       eachKey({
-        fromKeys: ['b', 'c', 'a', 'g'],
+        fromKeys: ['a', 'g'],
         fromModifiers: { optional: ['shift', 'caps_lock', 'left_option'] },
-        toKeys: ['b', 'w', 'left_arrow', 'right_arrow'],
+        toKeys: ['left_arrow', 'right_arrow'],
         toModifiers: ['left_command'],
         conditions: condition === undefined ? [isLayoutActive, ifMod4On] : [isLayoutActive, ifMod4On, condition]
       }),
@@ -225,15 +230,8 @@ function rules() {
       manipulators: [
         {
           type: 'basic',
-          from: { key_code: 'left_shift', modifiers: { mandatory: ['right_shift'], optional: ['caps_lock'] } },
-          to: [{ key_code: 'caps_lock' }],
-          to_if_alone: [{ key_code: 'left_shift' }]
-        },
-        {
-          type: 'basic',
-          from: { key_code: 'right_shift', modifiers: { mandatory: ['left_shift'], optional: ['caps_lock'] } },
-          to: [{ key_code: 'caps_lock' }],
-          to_if_alone: [{ key_code: 'right_shift' }]
+          from: { simultaneous: [{ key_code: 'left_shift' }, { key_code: 'right_shift' }], modifiers: { optional: ['caps_lock'] } },
+          to: [{ key_code: 'caps_lock', hold_down_milliseconds: 200 }, { key_code: 'vk_none' }]
         }
       ]
     },
